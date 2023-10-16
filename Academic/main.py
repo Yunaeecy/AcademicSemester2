@@ -3,23 +3,39 @@
 # When you run it, it will print welcome message and ask you to choose a function
 # Then it will run the function you choose
 import sqlite3
+from createTable import TableCreator
 
-# define a class called welcome
+# define a class called Main
 class Main:
     def __init__(self):
-        self.conn = sqlite3.connect("users.db")
-        self.create_table()
+        # # connect to the database and create a cursor
+        # self.conn = sqlite3.connect("academic.sqlite")
+        # self.cur = self.conn.cursor()
+        # # self.cur.execute("CREATE TABLE users(id, name, email)")
+        # # self.conn.commit()
+        # # write a query and execute it with the cursor
+        # self.query = "select sqlite_version();"
+        # self.cur.execute(self.query)
+        # # fetch and output the result
+        # self.result = self.cur.fetchone()
+        # print("SQLite version: {}".format(self.result))
+        # # close the cursor and connection
+        # self.cur.close()
+
+        # create an instance of TableCreator
+        table_creator = TableCreator("academic.sqlite")
+        table_creator.create_user_table()
+        table_creator.close_connection()
+
+        # initialize database connection variables
+        self.conn = None
+        self.cur = None
+
+
 
     def welcome_message(self):
         print("Welcome to the Academic Project")
 
-    def create_table(self):
-        self.conn.execute("""CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL,
-        )""")
-        self.conn.commit()
 
     def add_user(self):
         name = input("Enter your name: ")
@@ -30,9 +46,17 @@ class Main:
 
 
     def function_one(self):
-        print("This is function one")
-    # define a function called function_one
-    # Here function one is to connect to the database and store the user's information
+    # Here function one is to connect to the database
+        connect_to_db = input("Do you want to connect to the database? (y/n): ").lower()
+        if connect_to_db == "y":
+            # connect to the database
+            self.conn = sqlite3.connect("academic.sqlite")
+            self.cur = self.conn.cursor()
+            print ("Connected to the database")
+        else:
+            print ("Not connected to the database")
+    
+        
 
 
     def function_two(self):
@@ -50,12 +74,6 @@ class Main:
                 break
             else:
                 print("Invalid choice, please try again")
-
-
-
-# Here I want to connect the project to database, so that I can store the user's information
-
-
 
 if __name__ == "__main__":
     main = Main()

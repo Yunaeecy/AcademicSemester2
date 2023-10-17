@@ -1,35 +1,45 @@
-# Here I want to create a main file that will run the whole project
-# It should be OOP and should be able to run the whole project
-# When you run it, it will print welcome message and ask you to choose a function
-# Then it will run the function you choose
+
 import sqlite3
+import requests
+
 from createTable import TableCreator
 
 # define a class called Main
 class Main:
     def __init__(self):
-        # # connect to the database and create a cursor
-        # self.conn = sqlite3.connect("academic.sqlite")
-        # self.cur = self.conn.cursor()
-        # # self.cur.execute("CREATE TABLE users(id, name, email)")
-        # # self.conn.commit()
-        # # write a query and execute it with the cursor
-        # self.query = "select sqlite_version();"
-        # self.cur.execute(self.query)
-        # # fetch and output the result
-        # self.result = self.cur.fetchone()
-        # print("SQLite version: {}".format(self.result))
-        # # close the cursor and connection
-        # self.cur.close()
-
+        # specify the database name
+        self.db_name = "academic.db"
         # create an instance of TableCreator
-        table_creator = TableCreator("academic.sqlite")
-        table_creator.create_user_table()
-        table_creator.close_connection()
+        self.table_creator = TableCreator(self.db_name)
+        # create the user table
+        self.table_creator.create_user_table()
+        # iniitialize database connection variables
+        self.conn = sqlite3.connect(self.db_name)
+        self.cur = self.conn.cursor()
+        print ("Database connection established")
 
-        # initialize database connection variables
-        self.conn = None
-        self.cur = None
+        self.table_creator.register_user()
+        self.table_creator.login_user()
+        # close the connection
+        self.table_creator.close_connection()
+
+        
+        # initialize the logged in user
+        self.logged_in_user = None
+
+
+    def register_user(self):
+        while True:
+            success = self.table_creator.register_user()
+            if success:
+                break
+
+    def login_user(self):
+        while True:
+            user_data = self.table_creator.login_user()
+            if user_data:
+                self.logged_in_user = user_data
+                break
 
 
 
@@ -46,15 +56,7 @@ class Main:
 
 
     def function_one(self):
-    # Here function one is to connect to the database
-        connect_to_db = input("Do you want to connect to the database? (y/n): ").lower()
-        if connect_to_db == "y":
-            # connect to the database
-            self.conn = sqlite3.connect("academic.sqlite")
-            self.cur = self.conn.cursor()
-            print ("Connected to the database")
-        else:
-            print ("Not connected to the database")
+        pass
     
         
 

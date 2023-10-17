@@ -6,7 +6,15 @@ class TableCreator:
         self.cur = self.conn.cursor()
 
     def create_user_table(self):
-        self.cur.execute("CREATE TABLE users(id, name, email)")
+        create_table_query = """
+        CREATE TABLE IF NOT EXISTS users(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL
+        );   
+
+"""
+        self.cur.execute(create_table_query)
         self.conn.commit()
         print("User table created successfully")
 

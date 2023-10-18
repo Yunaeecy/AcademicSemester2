@@ -8,11 +8,17 @@ from createTable import TableCreator
 class Main:
     def __init__(self):
         # specify the database name
-        self.db_name = "academic.db"
+        self.db_name = "academic.sqlite"
         # create an instance of TableCreator
         self.table_creator = TableCreator(self.db_name)
         # create the user table
         self.table_creator.create_user_table()
+
+        # create the titanic table and import the data from the CSV file of local machine   
+        self.table_creator.create_titanic_table()
+        self.table_creator.import_titanic_data("/Users/yuna/Downloads/titanic/train.csv")
+
+
         # iniitialize database connection variables
         self.conn = sqlite3.connect(self.db_name)
         self.cur = self.conn.cursor()
@@ -47,12 +53,19 @@ class Main:
         print("Welcome to the Academic Project")
 
 
-    def add_user(self):
-        name = input("Enter your name: ")
-        email = input("Enter your email: ")
-        self.conn.execute("INSERT INTO users (name, email) VALUES (?,?)", (name, email))
-        self.conn.commit()
-        print ("User added successfully")
+    def search_titanic_data(self):
+        print("=== Search Titanic Data ===")
+        age_range_start = float(input("Enter the start of age range: "))
+        age_range_end = float(input("Enter the end of age range: "))
+
+        query = f"""
+        SELECT COUNT(*) FROM Titanic
+        WHERE Age >= {age_range_start} AND Age <= {age_range_end}
+        """
+        self.cur.execute(query)
+        result = self.cur.fetchone()
+
+        print(f"Number of people survived between {age_range_start} and {age_range_end} is {result[0]}")
 
 
     def function_one(self):
@@ -69,7 +82,7 @@ class Main:
         while True:
             choice = input("Choose a function (1,2,or q to quit):  ")
             if choice == "1":
-                self.function_one()
+                self.search_titanic_data()
             elif choice == "2":
                 self.function_two()
             elif choice == "q":

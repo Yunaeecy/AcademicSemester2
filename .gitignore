@@ -1,2 +1,4 @@
 .DS_Store
 test1710
+*.db
+*.pyc

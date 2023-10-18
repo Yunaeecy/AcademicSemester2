@@ -1,5 +1,6 @@
 import sqlite3
 import hashlib
+import csv
 
 class TableCreator:
     def __init__(self, db_name):
@@ -19,6 +20,50 @@ class TableCreator:
         self.cur.execute(create_table_query)
         self.conn.commit()
         print("User table created successfully")
+
+
+    def create_titanic_table(self):
+        self.cur.execute('''CREATE TABLE IF NOT EXISTS Titanic (
+            PassengerId INTEGER,
+            Survived INTEGER, -- 0 = No, 1 = Yes
+            Pclass INTEGER,
+            Name TEXT,
+            Sex TEXT,
+            Age REAL,
+            SibSp INTEGER,
+            Parch INTEGER,
+            Ticket TEXT,
+            Fare REAL,
+            Cabin TEXT,
+            Embarked TEXT,
+            PRIMARY KEY (PassengerId)
+        )''')
+        self.conn.commit()
+        print("Titanic table created successfully")
+
+    def import_titanic_data(self, file_path):
+        try:
+            with open(file_path, 'r') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    # Check if a record with the same PassengerId already exists
+                    existing_query = f'SELECT COUNT(*) FROM Titanic WHERE PassengerId={row["PassengerId"]}'
+                    self.cur.execute(existing_query)
+                    existing_count = self.cur.fetchone()[0]
+
+                    if existing_count == 0:
+                        # If no existing record, insert the new record
+                        insert_query = '''INSERT INTO Titanic (
+                            PassengerId, Survived, Pclass, Name, Sex, Age, SibSp, Parch, Ticket, Fare, Cabin, Embarked
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'''
+                        self.cur.execute(insert_query, (
+                            row['PassengerId'], row['Survived'], row['Pclass'], row['Name'],
+                            row['Sex'], row['Age'], row['SibSp'], row['Parch'], row['Ticket'],
+                            row['Fare'], row['Cabin'], row['Embarked']
+                        ))
+                        self.conn.commit()
+        except Exception as e:
+            print(f"Error importing Titanic data: {e}")
 
     def close_connection(self):
         self.cur.close()
